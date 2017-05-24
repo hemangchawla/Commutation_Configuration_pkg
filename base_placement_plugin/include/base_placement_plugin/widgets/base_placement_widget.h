@@ -17,7 +17,7 @@
 
 #include <QWidget>
 #include <QTimer>
-#include <QtConcurrentRun>
+#include <QtConcurrent/QtConcurrent>
 #include <QMainWindow>
 #include <QTreeView>
 #include <QStandardItemModel>

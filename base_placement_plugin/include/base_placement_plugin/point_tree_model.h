@@ -1,6 +1,7 @@
 #ifndef PointTreeModel_H
 #define PointTreeModel_H
 
+
 #include <QAbstractItemModel>
 #include <QModelIndex>
 #include <QVariant>

@@ -1,5 +1,5 @@
 <library path="lib/libbase_placement_plugin">
-  <class name="base_placement_plugin/Base Placement Plug-in"
+  <class name="base_placement_plugin/Base Placement Plug-In"
          type="base_placement_plugin::AddWayPoint"
          base_class_type="rviz::Panel">
     <description>

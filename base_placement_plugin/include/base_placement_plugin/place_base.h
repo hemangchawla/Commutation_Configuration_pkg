@@ -8,7 +8,7 @@
 
 #include <QObject>
 #include <QTimer>
-#include <QtConcurrentRun>
+#include <QtConcurrent/QtConcurrent>
 #include <QFuture>
 
 #ifndef PLACE_BASE_H_

@@ -1,4 +1,4 @@
-#include <QtGui>
+//#include <QtGui>
 
 #include <base_placement_plugin/point_tree_item.h>
 #include <base_placement_plugin/point_tree_model.h>
