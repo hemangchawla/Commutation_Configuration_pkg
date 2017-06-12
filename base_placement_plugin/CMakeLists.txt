@@ -13,6 +13,9 @@ find_package(catkin REQUIRED COMPONENTS
   tf_conversions
   map_creator
   pcl_ros
+  geometry_msgs
+  moveit_ros_planning_interface
+  moveit_core
 )
 
 
@@ -39,6 +42,12 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 add_definitions(-DQT_NO_KEYWORDS)
  
 
+add_library(create_marker  src/create_marker.cpp)
+target_link_libraries(create_marker  ${catkin_LIBRARIES} )
+
+  src/add_robot_base.cpp
+
+
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES 
@@ -63,6 +72,8 @@ set(base_placement_plugin_HDRS
   include/base_placement_plugin/point_tree_model.h
   include/base_placement_plugin/widgets/base_placement_widget.h
   include/base_placement_plugin/place_base.h
+  include/base_placement_plugin/add_robot_base.h
+
   
 )
 
@@ -94,6 +105,9 @@ target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${QT_LIBRARIES} ${rviz
 
 
 
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY}  yaml-cpp -lhdf5_serial -lhdf5_cpp  create_marker)
+
+
 
 find_package(class_loader)
 class_loader_hide_library_symbols(${PROJECT_NAME})
@@ -111,3 +125,4 @@ install(DIRECTORY include/${PROJECT_NAME}/
 install(FILES plugin.xml
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
+

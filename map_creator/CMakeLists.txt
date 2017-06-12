@@ -10,6 +10,9 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   tf2
   pcl_ros
+  moveit_ros_planning_interface
+  moveit_core
+  interactive_markers
 )
 
 find_package(octomap REQUIRED)
@@ -48,7 +51,7 @@ add_library(hdf5_dataset  src/hdf5_dataset.cpp)
 
 target_link_libraries(sphere_discretization  ${catkin_LIBRARIES} ${OCTOMAP_LIBRARIES} ${PCL_LIBRARY_DIRS})
 target_link_libraries(kinematics  ${catkin_LIBRARIES} -llapack)
-target_link_libraries(hdf5_dataset  ${catkin_LIBRARIES} )
+target_link_libraries(hdf5_dataset  ${catkin_LIBRARIES} -lhdf5_serial -lhdf5_cpp)
 
 install(TARGETS sphere_discretization kinematics hdf5_dataset
  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
@@ -79,6 +82,7 @@ target_link_libraries(load_reachability_map  hdf5_dataset ${catkin_LIBRARIES})
 add_executable(load_capability_map src/load_capability_map.cpp)
 add_dependencies(load_capability_map ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(load_capability_map  hdf5_dataset ${catkin_LIBRARIES})
+
 
 if(CATKIN_ENABLE_TESTING)
   catkin_add_gtest(utest test/utest.cpp)
