@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 2.8.3)
 
 project(base_placement_plugin)
-
+add_compile_options(-std=c++11)
+add_compile_options(-std=gnu++11)
+add_compile_options(-fext-numeric-literals)
 # Load catkin and all dependencies required for this package
 find_package(catkin REQUIRED COMPONENTS
   interactive_markers
@@ -16,6 +18,8 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   moveit_ros_planning_interface
   moveit_core
+  moveit_ros_move_group
+  moveit_msgs
 )
 
 
@@ -40,17 +44,17 @@ endif()
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 add_definitions(-DQT_NO_KEYWORDS)
- 
+
 
 add_library(create_marker  src/create_marker.cpp)
 target_link_libraries(create_marker  ${catkin_LIBRARIES} )
 
-  
+
 
 
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES 
+  LIBRARIES
 	${PROJECT_NAME}
   CATKIN_DEPENDS
   	interactive_markers
@@ -74,7 +78,7 @@ set(base_placement_plugin_HDRS
   include/base_placement_plugin/place_base.h
   include/base_placement_plugin/add_robot_base.h
 
-  
+
 )
 
 qt_wrap_cpp(base_placement_plugin_MOCS ${base_placement_plugin_HDRS})
@@ -100,7 +104,7 @@ qt_wrap_ui(UI_GENERATED_HEADERS ${base_placement_plugin_UIS})
 
 
 
-add_library(${PROJECT_NAME} ${base_placement_plugin_SRCS} ${base_placement_plugin_UIS} ${UI_GENERATED_HEADERS}) 
+add_library(${PROJECT_NAME} ${base_placement_plugin_SRCS} ${base_placement_plugin_UIS} ${UI_GENERATED_HEADERS})
 
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${QT_LIBRARIES} ${rviz_DEFAULT_PLUGIN_LIBRARIES} yaml-cpp )
 
@@ -126,4 +130,3 @@ install(DIRECTORY include/${PROJECT_NAME}/
 install(FILES plugin.xml
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
-
