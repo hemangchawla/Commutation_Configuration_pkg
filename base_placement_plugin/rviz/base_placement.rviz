@@ -27,8 +27,8 @@ Panels:
     Name: Time
     SyncMode: 0
     SyncSource: ""
-  - Class: base_placement_plugin/Base Placement Plug-in
-    Name: Base Placement Plug-in
+  - Class: base_placement_plugin/Base Placement Plug-In
+    Name: Base Placement Plug-In
     TextEntry: test_field
 Visualization Manager:
   Class: ""
