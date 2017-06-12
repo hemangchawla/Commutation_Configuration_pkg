@@ -42,7 +42,7 @@ catkin_package(
     roscpp
   CATKIN_DEPENDS message_runtime 
 )
-
+set(HDF5_INCLUDE_DIR "/usr/include/hdf5/serial" "/usr/lib/x86_64-linux-gnu/hdf5/serial/include")
 include_directories(include ${catkin_INCLUDE_DIRS} ${OCTOMAP_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR} ${PCL_INCLUDE_DIR})
 
 add_library(sphere_discretization  src/sphere_discretization.cpp)
