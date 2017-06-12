@@ -56,7 +56,7 @@ bool Hdf5Dataset::open()
 {
   const char *filepath = this->path_.c_str();
   const char *name = this->filename_.c_str();
-  char fullpath[100];
+  char fullpath[1000];
   strcpy(fullpath, filepath);
   strcat(fullpath, name);
   ROS_INFO("Opening map %s", this->filename_.c_str());
@@ -77,7 +77,7 @@ bool Hdf5Dataset::open_cap()
 {
   const char *filepath = this->path_.c_str();
   const char *name = this->filename_.c_str();
-  char fullpath[100];
+  char fullpath[1000];
   strcpy(fullpath, filepath);
   strcat(fullpath, name);
   ROS_INFO("Opening Capability map %s", this->filename_.c_str());
@@ -147,7 +147,7 @@ bool Hdf5Dataset::saveCapMapsToDataset(VectorOfVectors &capability_data, float &
   }
   const char *filepath = this->path_.c_str();
   const char *name = this->filename_.c_str();
-  char fullpath[100];
+  char fullpath[1000];
   strcpy(fullpath, filepath);
   strcat(fullpath, name);
   ROS_INFO("Saving Capability Map %s", this->filename_.c_str());
@@ -218,7 +218,7 @@ bool Hdf5Dataset::saveReachMapsToDataset( MultiMapPtr& poses,  MapVecDoublePtr& 
 
   const char *filepath = this->path_.c_str();
   const char *name = this->filename_.c_str();
-  char fullpath[100];
+  char fullpath[1000];
   strcpy(fullpath, filepath);
   strcat(fullpath, name);
   ROS_INFO("Saving map %s", this->filename_.c_str());
