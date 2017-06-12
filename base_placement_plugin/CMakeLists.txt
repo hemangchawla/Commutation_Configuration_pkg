@@ -45,7 +45,7 @@ add_definitions(-DQT_NO_KEYWORDS)
 add_library(create_marker  src/create_marker.cpp)
 target_link_libraries(create_marker  ${catkin_LIBRARIES} )
 
-  src/add_robot_base.cpp
+  
 
 
 catkin_package(
@@ -81,6 +81,7 @@ qt_wrap_cpp(base_placement_plugin_MOCS ${base_placement_plugin_HDRS})
 
 set(base_placement_plugin_SRCS
   src/add_way_point.cpp
+  src/add_robot_base.cpp
   src/point_tree_item.cpp
   src/point_tree_model.cpp
   src/widgets/base_placement_widget.cpp
