@@ -160,6 +160,8 @@ bool PlaceBase::loadRobotModel()
     return false;
   else
     robot_model_ = robot_model_loader.getModel();
+    ROS_INFO("I was able to load the robot model");
+    return true;
 }
 
 void PlaceBase::getBasePoses(std::vector<geometry_msgs::Pose> base_poses)
