@@ -86,7 +86,7 @@ int main(int argc, char **argv)
 
   while (ros::ok())
   {
-    unsigned char max_depth = 16;
+    unsigned char max_depth = 16; // Hemang: Depth of the octree. Need to figure this out in more detail.
     unsigned char minDepth = 0;
 
     // A box of radius 1 is created. It will be the size of the robot+1.5. Then the box is discretized by voxels of
@@ -95,7 +95,7 @@ int main(int argc, char **argv)
     // The center of every voxels are stored in a vector
 
     sphere_discretization::SphereDiscretization sd;
-    float r = 1;
+    float r = 1.5;
     octomap::point3d origin = octomap::point3d(0, 0, 0);  // This point will be the base of the robot
     octomap::OcTree *tree = sd.generateBoxTree(origin, r, resolution);
     std::vector< octomap::point3d > new_data;
@@ -125,23 +125,29 @@ int main(int argc, char **argv)
 
     float radius = resolution;
 
+    // Hemang: The length of this vector equals the number of sub-spheres. Each of these will contain a vector of poses associated with the center of sub-spheres.
     VectorOfVectors sphere_coord;
     sphere_coord.resize( new_data.size() );
-
+    // Hemang: Multivector here stores two-tuple vector of poses.
+    // This vector has the first element as all the poses on the sub spheres
+    // and the second element as the sub-sphere centers
     MultiVector pose_col;
-    pose_col.reserve( new_data.size() * 50);
+    // Hemang: The size of this vector equals the total number of spheres times the number of poses on each sub-sphere
 
-    for (int i = 0; i < new_data.size(); i++)
+    int num_poses_on_sphere = 50; // Number of poses to consider on a sphere.
+    pose_col.reserve( new_data.size() * num_poses_on_sphere);
+
+    for (int i = 0; i < new_data.size(); i++) // Hemang: Iterate over the spheres
     {
       static std::vector< geometry_msgs::Pose > pose;
       sd.convertPointToVector(new_data[i], sphere_coord[i]);
 
-      sd.make_sphere_poses(new_data[i], radius, pose);
-      for (int j = 0; j < pose.size(); j++)
+      sd.make_sphere_poses(new_data[i], radius, pose); // Hemang:: Make poses on the sub-sphere (selected in particular iteration)
+      for (int j = 0; j < pose.size(); j++) // Hemang: iterate over the poses in the sub-sphere
       {
         static std::vector< double > point_on_sphere;
         sd.convertPoseToVector(pose[j], point_on_sphere);
-        pose_col.push_back( std::make_pair(point_on_sphere, &sphere_coord[i]));
+        pose_col.push_back( std::make_pair(point_on_sphere, &sphere_coord[i])); // Hemang: Here the points on the sphere are associated to the center.
       }
     }
 
@@ -158,12 +164,15 @@ int main(int argc, char **argv)
 
     for (MultiVector::iterator it = pose_col.begin(); it != pose_col.end(); ++it)
     {
-      static std::vector< double > joints(6);
+      static std::vector< double > joints(6); // Hemang: hence it would work only for 6 dof robots for now
       int solns;
       if (k.isIKSuccess(it->first, joints, solns))
       {
         pose_col_filter.insert( std::make_pair( it->second, &(it->first)));
         ik_solutions.push_back(joints);
+        // Hemang: Here it can be undrstood that the two lists are created. First is a map that has the poses and the associated centers for which an IK solution is found.
+        // The second stores the IK solution for those poses, i.e. the joint configuration for which the particular pose is reached.
+
         // cout<<it->first[0]<<" "<<it->first[1]<<" "<<it->first[2]<<" "<<it->first[3]<<" "<<it->first[4]<<"
         // "<<it->first[5]<<" "<<it->first[6]<<endl;
       }
@@ -178,7 +187,8 @@ int main(int argc, char **argv)
     // accessing map is Olog(n)
 
     MapVecDoublePtr sphere_color;
-
+    // Hemang: This is the vector that stores the reachability of the spheres
+    // For other criterion, they will can be stored in similar such variables
 
     for (MultiMapPtr::iterator it = pose_col_filter.begin(); it != pose_col_filter.end(); ++it)
     {
@@ -187,6 +197,9 @@ int main(int argc, char **argv)
 
       // Reachability Index D=R/N*100;
       float d = float(pose_col_filter.count(sphere_coord)) / (pose_col.size() / new_data.size()) * 100;
+      // Hemang: Here the pose_col contains all the poses that could have been reached in the big sphere.
+      // The new_data contains the all sub-spheres being considered.
+      // Hence pose_col.size()/ new_data_size = num_poses_on_sphere
       sphere_color.insert( std::make_pair(it->first, double(d)));
     }
 
