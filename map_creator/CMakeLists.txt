@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(map_creator)
 
+add_compile_options(-std=c++11)
+add_compile_options(-std=gnu++11)
+add_compile_options(-fext-numeric-literals)
 
 find_package(catkin REQUIRED COMPONENTS
   visualization_msgs
@@ -13,6 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
   moveit_ros_planning_interface
   moveit_core
   interactive_markers
+  moveit_ros_perception
 )
 
 find_package(octomap REQUIRED)
@@ -83,6 +87,9 @@ add_executable(load_capability_map src/load_capability_map.cpp)
 add_dependencies(load_capability_map ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(load_capability_map  hdf5_dataset ${catkin_LIBRARIES})
 
+add_executable(remove_reachability_obstacles src/remove_reachability_obstacles.cpp)
+add_dependencies(remove_reachability_obstacles ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(remove_reachability_obstacles sphere_discretization hdf5_dataset ${catkin_LIBRARIES})
 
 if(CATKIN_ENABLE_TESTING)
   catkin_add_gtest(utest test/utest.cpp)
