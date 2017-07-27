@@ -2,15 +2,13 @@
 #define REMOVE_REACHABILITY_OBSTACLES_H
 
 // C++
-#include<chrono>
+#include <chrono>
 
 // ROS
 #include <ros/ros.h>
 
 // MoveIt!
 #include <moveit_msgs/GetPlanningScene.h>
-#include <moveit/pointcloud_octomap_updater/pointcloud_octomap_updater.h>
-
 
 // Octomap
 #include <octomap/octomap.h>
@@ -23,7 +21,6 @@
 
 //Map Creator
 #include <map_creator/WorkSpace.h>
-
 
 #define SPIN_RATE 10
 
@@ -52,8 +49,6 @@ private:
   moveit_msgs::GetPlanningScene scene_srv;
   map_creator::WorkSpace reachability_map;
   double reachability_resolution;
-
-
 };
 
 #endif // REMOVE_REACHABILITY_OBSTACLES_H

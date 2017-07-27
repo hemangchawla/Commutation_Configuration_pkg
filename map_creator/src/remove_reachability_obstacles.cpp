@@ -22,7 +22,7 @@
 remove_obstacles_reachability::remove_obstacles_reachability()
 {
   // Initiating and connecting to MoveIt! Octomap planning scene
-  Client_get_planning_scene = nh.serviceClient<moveit_msgs::GetPlanningScene>("/get_planning_scene",true);
+  Client_get_planning_scene = nh.serviceClient<moveit_msgs::GetPlanningScene>("/get_planning_scene", true);
   scene_srv.request.components.components = scene_srv.request.components.OCTOMAP;
   // Listen to relavent topics:
   Subscriber_reachability = nh.subscribe("/reachability_map", 1, &remove_obstacles_reachability::readMap, this);
@@ -125,7 +125,6 @@ void remove_obstacles_reachability::createFilteredReachability(pcl::octree::Octr
                                                                map_creator::WorkSpace& filtered_map,
                                                                map_creator::WorkSpace& colliding_map)
 {
-
   filtered_map.header = reachability_map.header;
   filtered_map.resolution = reachability_map.resolution;
   colliding_map.header = reachability_map.header;
@@ -143,6 +142,7 @@ void remove_obstacles_reachability::createFilteredReachability(pcl::octree::Octr
     std::vector<float> point_sqrd_dis;
 //    search_tree.voxelSearch(search_point, point_idx_vec);
     search_tree.radiusSearch(search_point, sqrt(3)*reachability_resolution/2.0, point_idx_vec, point_sqrd_dis);
+
     // If the reachability voxel has no collision points inside it
     if(point_idx_vec.size() == 0)
     {
@@ -154,9 +154,8 @@ void remove_obstacles_reachability::createFilteredReachability(pcl::octree::Octr
     }
   }
   ROS_INFO("Reachability Map Filtered!");
-  ROS_INFO_STREAM("Number of colliding voxels: " << colliding_map.WsSpheres.size());
-  ROS_INFO_STREAM("Number of spheres remaining: "<< filtered_map.WsSpheres.size());
-
+  ROS_INFO_STREAM( "Number of colliding voxels: "<<colliding_map.WsSpheres.size() );
+  ROS_INFO_STREAM( "Number of spheres remaining: "<<filtered_map.WsSpheres.size() );
 }
 
 void remove_obstacles_reachability::spin()
@@ -165,7 +164,8 @@ void remove_obstacles_reachability::spin()
 
   // Static scene (Else the speed of publishing is the limited by the rate of service call)
   octomap::OcTree* collision_octree;
-  if(Client_get_planning_scene.call(scene_srv) )
+
+  if( Client_get_planning_scene.call(scene_srv) )
   {
     ROS_INFO("Planning_scene received");
     moveit_msgs::PlanningScene scene_msg = scene_srv.response.scene;
@@ -179,7 +179,6 @@ void remove_obstacles_reachability::spin()
     ROS_WARN("Failed to call service /get_planning_scene");
     nh.shutdown();
   }
-
   // Create obstacle point cloud
   pcl::PointCloud<pcl::PointXYZ>::Ptr obstacles_cloud(new pcl::PointCloud <pcl::PointXYZ>);
   createObstaclesPointCloud(*collision_octree, obstacles_cloud);
@@ -187,8 +186,7 @@ void remove_obstacles_reachability::spin()
   // TODO: Dynamic Map
   // The above lines will be part of the loop
 
-
-  while(ros::ok())
+  while( ros::ok() )
   {
     std::chrono::high_resolution_clock::time_point t_start = std::chrono::high_resolution_clock::now();
     // Obstacle tree will be searched for neighbors
@@ -209,7 +207,6 @@ void remove_obstacles_reachability::spin()
     Publisher_filtered_reachability.publish(filtered_map);
     Publisher_colliding_reachability.publish(colliding_map);
     loop_rate.sleep();
-
   }
 }
 
