@@ -145,19 +145,23 @@ void remove_obstacles_reachability::createFilteredReachability(remove_obstacles_
     std::vector<int> point_idx_vec;
     std::vector<float> point_sqrd_dis;
 
-    if(type == remove_obstacles_reachability::VOXEL)
+    switch(type)
+    {
+    case remove_obstacles_reachability::VOXEL:
     {
       search_tree.voxelSearch(search_point, point_idx_vec);
+      break;
     }
-    else
-    if(type == remove_obstacles_reachability::INSCRIBED_SPHERE)
+    case remove_obstacles_reachability::INSCRIBED_SPHERE:
     {
       search_tree.radiusSearch(search_point, inscribe_reachability_radius, point_idx_vec, point_sqrd_dis);
+      break;
     }
-    else
-    if(type == remove_obstacles_reachability::CIRCUMSCRIBED_SPHERE)
+    case remove_obstacles_reachability::CIRCUMSCRIBED_SPHERE:
     {
       search_tree.radiusSearch(search_point, circumscribe_reachability_radius, point_idx_vec, point_sqrd_dis);
+      break;
+    }
     }
 
     // If the reachability voxel has no collision points inside it
