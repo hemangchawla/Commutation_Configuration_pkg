@@ -34,7 +34,7 @@ remove_obstacles_reachability::remove_obstacles_reachability()
    * if (dynamic scene)
    *  The new map will be published at the rate at which the scene is receied.
    * else
-   *  The scene is published at selected reate
+   *  The scene is published at selected rate
    */
 }
 
@@ -121,7 +121,8 @@ void remove_obstacles_reachability::createObstaclesPointCloud(octomap::OcTree& t
   }
 }
 
-void remove_obstacles_reachability::createFilteredReachability(pcl::octree::OctreePointCloudSearch<pcl::PointXYZ>& search_tree,
+void remove_obstacles_reachability::createFilteredReachability(remove_obstacles_reachability::filterType type,
+                                                               pcl::octree::OctreePointCloudSearch<pcl::PointXYZ>& search_tree,
                                                                map_creator::WorkSpace& filtered_map,
                                                                map_creator::WorkSpace& colliding_map)
 {
@@ -129,6 +130,9 @@ void remove_obstacles_reachability::createFilteredReachability(pcl::octree::Octr
   filtered_map.resolution = reachability_map.resolution;
   colliding_map.header = reachability_map.header;
   colliding_map.resolution = reachability_map.resolution;
+
+  double circumscribe_reachability_radius = sqrt(3)*reachability_resolution/2.0;
+  double inscribe_reachability_radius = reachability_resolution/2.0;
 
   for(int i = 0; i < reachability_map.WsSpheres.size(); ++i)
   {
@@ -140,8 +144,21 @@ void remove_obstacles_reachability::createFilteredReachability(pcl::octree::Octr
 
     std::vector<int> point_idx_vec;
     std::vector<float> point_sqrd_dis;
-//    search_tree.voxelSearch(search_point, point_idx_vec);
-    search_tree.radiusSearch(search_point, sqrt(3)*reachability_resolution/2.0, point_idx_vec, point_sqrd_dis);
+
+    if(type == remove_obstacles_reachability::VOXEL)
+    {
+      search_tree.voxelSearch(search_point, point_idx_vec);
+    }
+    else
+    if(type == remove_obstacles_reachability::INSCRIBED_SPHERE)
+    {
+      search_tree.radiusSearch(search_point, inscribe_reachability_radius, point_idx_vec, point_sqrd_dis);
+    }
+    else
+    if(type == remove_obstacles_reachability::CIRCUMSCRIBED_SPHERE)
+    {
+      search_tree.radiusSearch(search_point, circumscribe_reachability_radius, point_idx_vec, point_sqrd_dis);
+    }
 
     // If the reachability voxel has no collision points inside it
     if(point_idx_vec.size() == 0)
@@ -158,7 +175,7 @@ void remove_obstacles_reachability::createFilteredReachability(pcl::octree::Octr
   ROS_INFO_STREAM( "Number of spheres remaining: "<<filtered_map.WsSpheres.size() );
 }
 
-void remove_obstacles_reachability::spin()
+void remove_obstacles_reachability::spin(filterType filter_type)
 {
   ros::Rate loop_rate(SPIN_RATE);
 
@@ -197,7 +214,7 @@ void remove_obstacles_reachability::spin()
     // Create filtered reachability map
     map_creator::WorkSpace filtered_map;
     map_creator::WorkSpace colliding_map;
-    createFilteredReachability(obstacles_tree, filtered_map, colliding_map);
+    createFilteredReachability(filter_type, obstacles_tree, filtered_map, colliding_map);
 
     std::chrono::high_resolution_clock::time_point t_end = std::chrono::high_resolution_clock::now();
     std::chrono::milliseconds ms = std::chrono::duration_cast <std::chrono::milliseconds>(t_end-t_start);
@@ -212,9 +229,45 @@ void remove_obstacles_reachability::spin()
 
 int main(int argc, char **argv)
 {
+  remove_obstacles_reachability::filterType filter_type;
+  std::cout<<"argc: "<<argc<<'\n';
+
+  if(argc == 1)
+  {
+    ROS_INFO("No filter type provided. Defaulting to CIRCUMSCRIBED SPHERE!");
+    filter_type = remove_obstacles_reachability::CIRCUMSCRIBED_SPHERE;
+  }
+  else
+  {
+    std::string input = argv[1];
+    std::transform(input.begin(), input.end(), input.begin(), ::tolower);
+
+    if(input.compare("voxel") == 0)
+    {
+      ROS_INFO("Setting filter type to VOXEL");
+      filter_type = remove_obstacles_reachability::VOXEL;
+    }
+    else
+    if(input.compare("circumscribe") == 0)
+    {
+      ROS_INFO("Setting filter type to CIRCUMSCRIBED SPHERE");
+      filter_type = remove_obstacles_reachability::CIRCUMSCRIBED_SPHERE;
+    }
+    else
+    if(input.compare("inscribe") == 0)
+    {
+      ROS_INFO("Setting filter type to INSCRIBED SPHERE");
+      filter_type = remove_obstacles_reachability::INSCRIBED_SPHERE;
+    }
+    else
+    {
+      ROS_ERROR_STREAM("Invalid filtering type "<<input<<" receievd. Shutting Down!");
+      ros::shutdown();
+    }
+  }
   ros::init(argc, argv, "remove_reachability_obstacles");
   ros::AsyncSpinner spinner(1);
   spinner.start();
   remove_obstacles_reachability rm;
-  rm.spin();
+  rm.spin(filter_type);
 }

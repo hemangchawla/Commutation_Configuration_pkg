@@ -27,18 +27,29 @@
 class remove_obstacles_reachability
 {
 public:
+
+  enum filterType {
+    VOXEL,
+    INSCRIBED_SPHERE,
+    CIRCUMSCRIBED_SPHERE // Conservative, Default
+  };
+
   remove_obstacles_reachability();
   ~remove_obstacles_reachability();
-  void spin();
+  void spin(filterType filter_type);
 
 private:
-  // Functions
 
-  void readMap(const map_creator::WorkSpace msg); // PARTIAL
+  // Functions
+  void readMap(const map_creator::WorkSpace msg);
   // Reads the reachability map and stores in global variable
-  void createObstaclesPointCloud(octomap::OcTree& tree, pcl::PointCloud<pcl::PointXYZ>::Ptr obstacle_vertices); // DONE
+  void createObstaclesPointCloud(octomap::OcTree& tree,
+                                 pcl::PointCloud<pcl::PointXYZ>::Ptr obstacle_vertices);
   // Manipulates the read collision octomap to create the simplified coliision point cloud
-  void createFilteredReachability(pcl::octree::OctreePointCloudSearch<pcl::PointXYZ>& search_tree, map_creator::WorkSpace& filtered_map, map_creator::WorkSpace& colliding_map); // ONGOING
+  void createFilteredReachability(filterType type,
+                                  pcl::octree::OctreePointCloudSearch<pcl::PointXYZ>& search_tree,
+                                  map_creator::WorkSpace& filtered_map,
+                                  map_creator::WorkSpace& colliding_map);
   // Filters reachability map using obstacle information
 
   ros::NodeHandle nh;
