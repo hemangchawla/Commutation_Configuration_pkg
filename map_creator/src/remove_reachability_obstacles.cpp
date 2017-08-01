@@ -25,6 +25,7 @@ remove_obstacles_reachability::remove_obstacles_reachability()
   Client_get_planning_scene = nh.serviceClient<moveit_msgs::GetPlanningScene>("/get_planning_scene", true);
   scene_srv.request.components.components = scene_srv.request.components.OCTOMAP;
   // Listen to relavent topics:
+  map_rcvd = false;
   Subscriber_reachability = nh.subscribe("/reachability_map", 1, &remove_obstacles_reachability::readMap, this);
   // reachability gives use the centers of the voxels we will be searching
   Publisher_filtered_reachability = nh.advertise<map_creator::WorkSpace>("/reachability_map_filtered", 0);
@@ -50,6 +51,8 @@ void remove_obstacles_reachability::readMap(const map_creator::WorkSpace msg)
   ROS_INFO_STREAM( "Reachability Map Received! Number of reachability spheres: "<<msg.WsSpheres.size() );
   reachability_map = msg;
   reachability_resolution = msg.resolution;
+  map_rcvd = true;
+  Subscriber_reachability.shutdown();
 }
 
 void remove_obstacles_reachability::createObstaclesPointCloud(octomap::OcTree& tree,   pcl::PointCloud<pcl::PointXYZ>::Ptr obstacle_vertices)
@@ -207,7 +210,7 @@ void remove_obstacles_reachability::spin(filterType filter_type)
   // TODO: Dynamic Map
   // The above lines will be part of the loop
 
-  while( ros::ok() )
+  while( ros::ok() & map_rcvd == true)
   {
     std::chrono::high_resolution_clock::time_point t_start = std::chrono::high_resolution_clock::now();
     // Obstacle tree will be searched for neighbors

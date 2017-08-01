@@ -22,7 +22,7 @@
 //Map Creator
 #include <map_creator/WorkSpace.h>
 
-#define SPIN_RATE 10
+#define SPIN_RATE 5
 
 class remove_obstacles_reachability
 {
@@ -60,6 +60,7 @@ private:
   moveit_msgs::GetPlanningScene scene_srv;
   map_creator::WorkSpace reachability_map;
   double reachability_resolution;
+  bool map_rcvd;
 };
 
 #endif // REMOVE_REACHABILITY_OBSTACLES_H
