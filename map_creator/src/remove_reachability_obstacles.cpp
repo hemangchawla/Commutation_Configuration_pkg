@@ -189,10 +189,19 @@ void remove_obstacles_reachability::spin(filterType filter_type)
   // Static scene (Else the speed of publishing is the limited by the rate of service call)
   octomap::OcTree* collision_octree;
 
+  ROS_INFO("Reading planning scene");
+
   if( Client_get_planning_scene.call(scene_srv) )
   {
     ROS_INFO("Planning_scene received");
+
     moveit_msgs::PlanningScene scene_msg = scene_srv.response.scene;
+
+    if(scene_msg.world.octomap.octomap.data.size() == 0)
+    {
+      ROS_ERROR("No collision octomap nodes found! Nothing to filter!");
+      ros::shutdown();
+    }
     octomap_msgs::OctomapWithPose octomap_pose = scene_msg.world.octomap;
     octomap_msgs::Octomap octomap = octomap_pose.octomap;
     octomap::AbstractOcTree* abstract_tree = octomap_msgs::msgToMap(octomap);
@@ -200,17 +209,22 @@ void remove_obstacles_reachability::spin(filterType filter_type)
   }
   else
   {
-    ROS_WARN("Failed to call service /get_planning_scene");
-    nh.shutdown();
+    ROS_ERROR("Failed to call service /get_planning_scene");
+    ros::shutdown();
   }
   // Create obstacle point cloud
   pcl::PointCloud<pcl::PointXYZ>::Ptr obstacles_cloud(new pcl::PointCloud <pcl::PointXYZ>);
   createObstaclesPointCloud(*collision_octree, obstacles_cloud);
 
+  if(!map_rcvd)
+  {
+    ROS_ERROR("Reachability map file not loaded. Shutting down!");
+    ros::shutdown();
+  }
   // TODO: Dynamic Map
   // The above lines will be part of the loop
 
-  while( ros::ok() & map_rcvd == true)
+  while( ros::ok() )
   {
     std::chrono::high_resolution_clock::time_point t_start = std::chrono::high_resolution_clock::now();
     // Obstacle tree will be searched for neighbors
@@ -237,11 +251,10 @@ void remove_obstacles_reachability::spin(filterType filter_type)
 int main(int argc, char **argv)
 {
   remove_obstacles_reachability::filterType filter_type;
-  std::cout<<"argc: "<<argc<<'\n';
 
   if(argc == 1)
   {
-    ROS_INFO("No filter type provided. Defaulting to CIRCUMSCRIBED SPHERE!");
+    ROS_WARN("No filter type provided. Defaulting to CIRCUMSCRIBED SPHERE!");
     filter_type = remove_obstacles_reachability::CIRCUMSCRIBED_SPHERE;
   }
   else
