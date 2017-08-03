@@ -22,7 +22,7 @@
 //Map Creator
 #include <map_creator/WorkSpace.h>
 
-#define SPIN_RATE 5
+#define SPIN_RATE 10
 
 class remove_obstacles_reachability
 {
@@ -51,16 +51,18 @@ private:
                                   map_creator::WorkSpace& filtered_map,
                                   map_creator::WorkSpace& colliding_map);
   // Filters reachability map using obstacle information
+  void readPlanningScene(const moveit_msgs::PlanningScene msg);
 
   ros::NodeHandle nh;
   ros::Subscriber Subscriber_reachability;
+  ros::Subscriber Subscriber_planning_scene;
   ros::Publisher Publisher_filtered_reachability;
   ros::Publisher Publisher_colliding_reachability;
-  ros::ServiceClient Client_get_planning_scene;
-  moveit_msgs::GetPlanningScene scene_srv;
   map_creator::WorkSpace reachability_map;
+  octomap::OcTree* collision_octree;
   double reachability_resolution;
   bool map_rcvd;
+  bool scene_rcvd;
 };
 
 #endif // REMOVE_REACHABILITY_OBSTACLES_H

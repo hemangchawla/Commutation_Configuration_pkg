@@ -22,9 +22,11 @@
 remove_obstacles_reachability::remove_obstacles_reachability()
 {
   // Initiating and connecting to MoveIt! Octomap planning scene
-  Client_get_planning_scene = nh.serviceClient<moveit_msgs::GetPlanningScene>("/get_planning_scene", true);
-  scene_srv.request.components.components = scene_srv.request.components.OCTOMAP;
+//  Client_get_planning_scene = nh.serviceClient<moveit_msgs::GetPlanningScene>("/get_planning_scene", true);
+//  scene_srv.request.components.components = scene_srv.request.components.OCTOMAP;
   // Listen to relavent topics:
+  scene_rcvd=false;
+  Subscriber_planning_scene = nh.subscribe("/move_group/monitored_planning_scene",1,&remove_obstacles_reachability::readPlanningScene,this);
   map_rcvd = false;
   Subscriber_reachability = nh.subscribe("/reachability_map", 1, &remove_obstacles_reachability::readMap, this);
   // reachability gives use the centers of the voxels we will be searching
@@ -44,6 +46,24 @@ remove_obstacles_reachability::~remove_obstacles_reachability()
   ROS_INFO("Shutting Down remove_reachability_obstacles");
   ros::shutdown();
 }
+
+void remove_obstacles_reachability::readPlanningScene(const moveit_msgs::PlanningScene scene_msg)
+{
+    ROS_INFO("Planning_scene received");
+
+    if(scene_msg.world.octomap.octomap.data.size() == 0)
+    {
+      ROS_ERROR("No collision octomap nodes found! Nothing to filter!");
+      ros::shutdown();
+    }
+    octomap_msgs::OctomapWithPose octomap_pose = scene_msg.world.octomap;
+    octomap_msgs::Octomap octomap = octomap_pose.octomap;
+    octomap::AbstractOcTree* abstract_tree = octomap_msgs::msgToMap(octomap);
+    collision_octree = (octomap::OcTree*)abstract_tree;
+    scene_rcvd = true;
+    Subscriber_planning_scene.shutdown();
+}
+
 
 void remove_obstacles_reachability::readMap(const map_creator::WorkSpace msg)
 {
@@ -185,47 +205,30 @@ void remove_obstacles_reachability::createFilteredReachability(remove_obstacles_
 void remove_obstacles_reachability::spin(filterType filter_type)
 {
   ros::Rate loop_rate(SPIN_RATE);
-
-  // Static scene (Else the speed of publishing is the limited by the rate of service call)
-  octomap::OcTree* collision_octree;
-
-  ROS_INFO("Reading planning scene");
-
-  if( Client_get_planning_scene.call(scene_srv) )
-  {
-    ROS_INFO("Planning_scene received");
-
-    moveit_msgs::PlanningScene scene_msg = scene_srv.response.scene;
-
-    if(scene_msg.world.octomap.octomap.data.size() == 0)
-    {
-      ROS_ERROR("No collision octomap nodes found! Nothing to filter!");
-      ros::shutdown();
-    }
-    octomap_msgs::OctomapWithPose octomap_pose = scene_msg.world.octomap;
-    octomap_msgs::Octomap octomap = octomap_pose.octomap;
-    octomap::AbstractOcTree* abstract_tree = octomap_msgs::msgToMap(octomap);
-    collision_octree = (octomap::OcTree*)abstract_tree;
-  }
-  else
-  {
-    ROS_ERROR("Failed to call service /get_planning_scene");
-    ros::shutdown();
-  }
-  // Create obstacle point cloud
   pcl::PointCloud<pcl::PointXYZ>::Ptr obstacles_cloud(new pcl::PointCloud <pcl::PointXYZ>);
-  createObstaclesPointCloud(*collision_octree, obstacles_cloud);
 
-  if(!map_rcvd)
-  {
-    ROS_ERROR("Reachability map file not loaded. Shutting down!");
-    ros::shutdown();
-  }
   // TODO: Dynamic Map
-  // The above lines will be part of the loop
 
-  while( ros::ok() )
+  while( ros::ok())
   {
+    if (scene_rcvd && obstacles_cloud->size()==0)
+    {
+      // Create obstacle point cloud
+      ROS_INFO("Creating obstacles point cloud");
+      createObstaclesPointCloud(*collision_octree, obstacles_cloud);
+    }
+    else if (!scene_rcvd)
+    {
+      ROS_WARN("Awaiting planning scene!");
+    }
+
+    if(!map_rcvd)
+    {
+      ROS_WARN("Awating reachability_map");
+    }
+
+    if (map_rcvd && obstacles_cloud->size()!=0)
+    {
     std::chrono::high_resolution_clock::time_point t_start = std::chrono::high_resolution_clock::now();
     // Obstacle tree will be searched for neighbors
     pcl::octree::OctreePointCloudSearch<pcl::PointXYZ> obstacles_tree(reachability_resolution);
@@ -244,8 +247,11 @@ void remove_obstacles_reachability::spin(filterType filter_type)
     // Publish filtered reachability map
     Publisher_filtered_reachability.publish(filtered_map);
     Publisher_colliding_reachability.publish(colliding_map);
+    }
+    ros::spinOnce();
     loop_rate.sleep();
   }
+
 }
 
 int main(int argc, char **argv)
