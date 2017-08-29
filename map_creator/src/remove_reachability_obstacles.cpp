@@ -114,11 +114,11 @@ void remove_obstacles_reachability::createObstaclesPointCloud(octomap::OcTree& t
     {
       double voxel_size = it.getSize();
 
-      for(int dx = -1; dx <= 1; ++dx)
+      for(int dx = -1; dx <= 1; dx=dx+2)
       {
-        for(int dy = -1; dy <= 1; ++dy)
+        for(int dy = -1; dy <= 1; dy=dy+2)
         {
-          for(int dz = -1; dz <= 1; ++dz)
+          for(int dz = -1; dz <= 1; dz=dz+2)
           {
             std::vector<double> point;
             point.push_back( it.getX()+(dx*voxel_size/2) );
