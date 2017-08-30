@@ -67,6 +67,10 @@ install(DIRECTORY include/${PROJECT_NAME}/
  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
 )
 
+add_library(manipulator_voxel_occupancy_list src/manipulator_voxel_occupancy_list.cpp)
+add_dependencies(manipulator_voxel_occupancy_list ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(manipulator_voxel_occupancy_list ${catkin_LIBRARIES})
+
 add_executable(create_reachability_map src/create_reachability_map.cpp)
 add_dependencies(create_reachability_map ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(create_reachability_map sphere_discretization kinematics  hdf5_dataset ${catkin_LIBRARIES})
@@ -90,6 +94,8 @@ target_link_libraries(load_capability_map  hdf5_dataset ${catkin_LIBRARIES})
 add_executable(remove_reachability_obstacles src/remove_reachability_obstacles.cpp)
 add_dependencies(remove_reachability_obstacles ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(remove_reachability_obstacles sphere_discretization hdf5_dataset ${catkin_LIBRARIES})
+
+
 
 if(CATKIN_ENABLE_TESTING)
   catkin_add_gtest(utest test/utest.cpp)
