@@ -1,11 +1,29 @@
 //#include  <map_creator/manipulator_voxel_occupancy_list.h>
 #include "../include/map_creator/manipulator_voxel_occupancy_list.h"
 
-manipulator_voxel_occupancy_list::manipulator_voxel_occupancy_list(octomap::OcTree*& tree)
+manipulator_voxel_occupancy_list::manipulator_voxel_occupancy_list(octomap::OcTree*& tree,
+                                                                   const collision_detection::CollisionRobotConstPtr& collision_robot_,
+                                                                   std::string& group_name,
+                                                                   const collision_detection::AllowedCollisionMatrix& matrix)
 {
-
   // The set of voxels we are considering will be converted to array of boxes collision object once
   generateBoxesFromOctomap(tree);
+  collision_robot_->getRobotModel()->getName();
+
+  // Collision Robot pointer for FCL
+  robot_fcl_ptr_ =  &dynamic_cast<const CollsionRobotFCLDerived&>(*collision_robot_);
+
+   // Collision Manager
+  manager_ = new fcl::DynamicAABBTreeCollisionManager();
+
+  req.group_name = group_name;
+  req.distance = false;
+  req.cost = false;
+  req.contacts = false;
+  req.verbose = false;
+
+//  ACM
+    *acm = matrix;
 }
 
 manipulator_voxel_occupancy_list::~manipulator_voxel_occupancy_list()
@@ -13,23 +31,41 @@ manipulator_voxel_occupancy_list::~manipulator_voxel_occupancy_list()
 
 }
 
-void manipulator_voxel_occupancy_list::getOccupiedVoxels(robot_state::RobotStatePtr state,std::vector<std::vector<double>>& occ_list)
+void manipulator_voxel_occupancy_list::getOccupiedVoxels(robot_state::RobotStatePtr state_, std::vector<std::vector<double>>& occ_list)
 {
-//  const collision_detection::CollisionRobot robot;
-////  collision_detection::CollisionWorldFCL::checkRobotCollision();
-//  const collision_detection::CollisionRobotFCL& robot_fcl = dynamic_cast<const collision_detection::CollisionRobotFCL&>(robot);
-//  collision_detection::FCLObject fcl_obj;
-//  robot_fcl.constructFCLObject(state, fcl_obj);
 
-//  // fcl_obj is the one we consider
-//  std::unique_ptr<fcl::BroadPhaseCollisionManager> manager_;
+  // From the state a set of robot collision object has to be constructed
+  collision_detection::FCLObject fcl_obj;
 
+  // Construct collision objects for the arm
+  robot_fcl_ptr_->constructRobotFCLObject(*state_,fcl_obj);
+  // Arm is to be checked against all boxes in the list for collision
+   collision_detection::CollisionData cd(&req, &res, &*acm);
+   cd.enableGroup(robot_fcl_ptr_->getRobotModel());
 
-//  collision_detection::CollisionData cd(&req, &res, acm);
-//  cd.enableGroup(robot.getRobotModel());
-//  for (std::size_t i = 0; !cd.done_ && i < fcl_obj.collision_objects_.size(); ++i)
-//    manager_->collide(fcl_obj.collision_objects_[i].get(), &cd, &fcl::CollisionCallBack);
+   // Setup collision manager with arm links
+   // TODO: broadphase manager vs double for loops
 
+  fcl_obj.registerTo(manager_);
+  manager_->setup();
+
+//   // iterate over octree_boxes and check for collision with robot
+   for (size_t i = 0; i < octree_boxes.size(); ++i)
+   {
+     cd.res_->clear();
+     manager_->collide(octree_boxes[i], &cd, &collision_detection::collisionCallback);
+
+     if (cd.res_->collision)
+     {
+       std::vector<double> center;
+       center.push_back(octree_boxes[i]->getTranslation().data[0]);
+       center.push_back(octree_boxes[i]->getTranslation().data[1]);
+       center.push_back(octree_boxes[i]->getTranslation().data[2]);
+       occ_list.push_back(center);
+     }
+   }
+  fcl_obj.unregisterFrom(manager_);
+  return;
 }
 
 void manipulator_voxel_occupancy_list::generateBoxesFromOctomap(octomap::OcTree*& octomap_tree)
@@ -59,22 +95,4 @@ void manipulator_voxel_occupancy_list::generateBoxesFromOctomap(octomap::OcTree*
   }
 
 }
-
-bool manipulator_voxel_occupancy_list::checkVoxelOccupancy(std::vector<double> &voxel_center, double &voxel_size)
-{
-
-}
-
-
-////    std::vector<fcl::CollisionObject*> env;
-
-////    fcl::FCL_REAL extents[] = {-1,1,-1,1,-1,1};
-////    std::vector<fcl::Transform3f> transforms;
-////    fcl::Transform3f tf;
-////    // tf is the location of the box
-////    fcl::Box* box = new fcl::Box(1,1,1); // sizes of x y and z
-////    // This has to be the size of the reach map voxels
-
-////    env.push_back(new fcl::CollisionObject(std::shared_ptr<fcl::CollisionGeometry>(box),tf));
-
 

@@ -42,18 +42,45 @@
 //Map Creator
 //#include <map_creator/WorkSpace.h>
 
+
+
 class manipulator_voxel_occupancy_list
 {
 public:
-  manipulator_voxel_occupancy_list(octomap::OcTree*& octomap_tree);
+  /** @brief Constructor */
+  manipulator_voxel_occupancy_list(octomap::OcTree*& octomap_tree,
+                                   const collision_detection::CollisionRobotConstPtr& collision_robot_,
+                                   std::string& group_name,
+                                   const collision_detection::AllowedCollisionMatrix& matrix);
+  /** @brief Destructor */
   ~manipulator_voxel_occupancy_list();
-  void getOccupiedVoxels(robot_state::RobotStatePtr state, std::vector<std::vector<double>>& occ_list);
+  /** @brief Mainfuction to compute centers of occupied voxels for a given robot state */
+  void getOccupiedVoxels(robot_state::RobotStatePtr state_, std::vector<std::vector<double>>& occ_list);
+
 private:
+
+  class CollsionRobotFCLDerived : public collision_detection::CollisionRobotFCL
+  {
+  public:
+    /** @brief Construct collision objects from the robot */
+    // Originally protected function
+    void constructRobotFCLObject(const robot_state::RobotState& state,
+                      collision_detection::FCLObject& fcl_obj) const
+    {
+      this->constructFCLObject(state,fcl_obj);
+    }
+  };
+
+  /** @brief Generate the collision object boxes from the octomap */
   void generateBoxesFromOctomap(octomap::OcTree*& tree);
-  bool checkVoxelOccupancy(std::vector<double>& voxel_center, double& voxel_size);
+
 
   std::vector<fcl::CollisionObject*> octree_boxes;
-
+  const CollsionRobotFCLDerived* robot_fcl_ptr_;
+  fcl::BroadPhaseCollisionManager* manager_;
+  const collision_detection::AllowedCollisionMatrixPtr acm;
+  collision_detection::CollisionRequest req;
+  collision_detection::CollisionResult res;
 
 };
 
