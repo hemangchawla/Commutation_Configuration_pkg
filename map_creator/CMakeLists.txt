@@ -17,6 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
   moveit_core
   interactive_markers
   moveit_ros_perception
+  moveit_visual_tools
 )
 
 find_package(octomap REQUIRED)
@@ -70,6 +71,10 @@ install(DIRECTORY include/${PROJECT_NAME}/
 add_library(manipulator_voxel_occupancy_list src/manipulator_voxel_occupancy_list.cpp)
 add_dependencies(manipulator_voxel_occupancy_list ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(manipulator_voxel_occupancy_list ${catkin_LIBRARIES})
+
+add_executable(test_state_voxels src/test_state_voxels.cpp)
+add_dependencies(test_state_voxels ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(test_state_voxels manipulator_voxel_occupancy_list sphere_discretization ${catkin_LIBRARIES})
 
 add_executable(create_reachability_map src/create_reachability_map.cpp)
 add_dependencies(create_reachability_map ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
