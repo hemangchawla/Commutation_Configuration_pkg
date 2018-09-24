@@ -19,50 +19,103 @@
 #include <pcl/point_cloud.h>
 #include <pcl/octree/octree.h>
 
-//Map Creator
+// Map Creator
 #include <map_creator/WorkSpace.h>
 
 #define SPIN_RATE 10
 
-class remove_obstacles_reachability
+class FilteredReachability
 {
 public:
-
-  enum filterType {
+  /**
+   * @brief The filterType enum The filtering of reachability voxels can be done based on the three modes of collision
+   * check. Default is Conservative CIRCUMSCRIBED_RADIUS
+   */
+  enum FilterType
+  {
     VOXEL,
     INSCRIBED_SPHERE,
-    CIRCUMSCRIBED_SPHERE // Conservative, Default
+    CIRCUMSCRIBED_SPHERE  // Conservative, Default
   };
-
-  remove_obstacles_reachability();
-  ~remove_obstacles_reachability();
-  void spin(filterType filter_type);
+  /**
+   * @brief FilteredReachability The constructor to create a Filtered Reachability objec
+   */
+  FilteredReachability();
+  ~FilteredReachability();
+  /**
+   * @brief spin Spin the ros node.
+   * @param filter_type The type of FilteredReachability::FilterType to be used for direct filtering of reachability
+   * voxels in collision
+   * @todo convert to action server
+   */
+  void spin(FilterType filter_type);
 
 private:
-
   // Functions
+  /**
+   * @brief readMap Reads the reachability map from topic and stores it
+   * @param msg The published map as subscribed on topic
+   */
   void readMap(const map_creator::WorkSpace msg);
-  // Reads the reachability map and stores in global variable
-  void createObstaclesPointCloud(octomap::OcTree& tree,
-                                 pcl::PointCloud<pcl::PointXYZ>::Ptr obstacle_vertices);
-  // Manipulates the read collision octomap to create the simplified coliision point cloud
-  void createFilteredReachability(filterType type,
-                                  pcl::octree::OctreePointCloudSearch<pcl::PointXYZ>& search_tree,
-                                  map_creator::WorkSpace& filtered_map,
-                                  map_creator::WorkSpace& colliding_map);
-  // Filters reachability map using obstacle information
+  /**
+   * @brief createObstaclesPointCloud Manipulates the read collision octomap to create the simplified coliision point
+   * cloud
+   * @param tree The obstacle tree
+   * @param obstacle_vertices The simplified vertices representation of the obstacles
+   * @todo compare with AABB collision check in terms of speed
+   */
+  void createObstaclesPointCloud(octomap::OcTree& tree, pcl::PointCloud<pcl::PointXYZ>::Ptr obstacle_vertices);
+
+  /**
+   * @brief readPlanningScene Read current state of the planning scene to be used for filtering voxels
+   * @param msg The planning scene topic published by moveit
+   */
   void readPlanningScene(const moveit_msgs::PlanningScene msg);
 
-  ros::NodeHandle nh;
-  ros::Subscriber Subscriber_reachability;
-  ros::Subscriber Subscriber_planning_scene;
-  ros::Publisher Publisher_filtered_reachability;
-  ros::Publisher Publisher_colliding_reachability;
-  map_creator::WorkSpace reachability_map;
-  octomap::OcTree* collision_octree;
-  double reachability_resolution;
-  bool map_rcvd;
-  bool scene_rcvd;
+  /**
+   * @brief setFilterType To set the filter type that will be used to filter the reacchability map
+   * @param input The input string used to specify the filter type
+   * @param filter_type The filter type is set by param by reference
+   */
+  void setFilterType(std::string input, FilterType& filter_type);
+
+  /**
+   * @brief createFilteredReachability Filters reachability map using obstacle information
+   * @param type The type of filter to be used to remove the reachability voxels in direct collision
+   * @param search_tree The obstacle octree for collision check
+   * @param filtered_map The output filtered reachability map
+   * @param colliding_map The output for colliding portion of reachability map
+   */
+  void createFilteredReachability(FilterType type, pcl::octree::OctreePointCloudSearch<pcl::PointXYZ>& search_tree,
+                                  map_creator::WorkSpace& filtered_map, map_creator::WorkSpace& colliding_map);
+
+  // Variables
+  /**
+   * @brief nh_ Main node handle
+   */
+  ros::NodeHandle nh_;
+  /**
+   * @brief Subscriber_reachability_ Subscriber to the reachability or inverse reachability map
+   */
+  ros::Subscriber Subscriber_reachability_;
+  /**
+   * @brief Subscriber_planning_scene_ Subscriber to the moveit planning scene
+   */
+  ros::Subscriber Subscriber_planning_scene_;
+  /**
+   * @brief Publisher_filtered_reachability_ Publisher of the filtered reachability map
+   */
+  ros::Publisher Publisher_filtered_reachability_;
+  /**
+   * @brief Publisher_colliding_reachability_ Publisher of the directly colliding reachability map that was removed
+   */
+  ros::Publisher Publisher_colliding_reachability_;
+
+  map_creator::WorkSpace reachability_map_;
+  octomap::OcTree* collision_octree_;
+  double reachability_resolution_;
+  bool map_rcvd_;
+  bool scene_rcvd_;
 };
 
-#endif // REMOVE_REACHABILITY_OBSTACLES_H
+#endif  // REMOVE_REACHABILITY_OBSTACLES_H

@@ -1,7 +1,7 @@
 #ifndef MANIPULATOR_VOXEL_OCCUPANCY_LIST_H
 #define MANIPULATOR_VOXEL_OCCUPANCY_LIST_H
 
-// C++
+// Basic
 #include <chrono>
 
 // ROS
@@ -26,26 +26,52 @@
 #include <fcl/collision.h>
 #include <fcl/broadphase/broadphase.h>
 
-class manipulator_voxel_occupancy_list
+class ManipulatorVoxelOccupancy
 {
 public:
-  /** @brief Constructor */
-  manipulator_voxel_occupancy_list(octomap::OcTree*& octomap_tree, const collision_detection::CollisionRobotConstPtr& collision_robot_);
+  /**
+   * @brief ManipulatorVoxelOccupancy Represents the occupancy object of a manipulator in a given octomap
+   * @param octomap_tree The octree containing the world scene ie the 3D obstacles
+   * @param collision_robot The collision model of the robot
+   */
+  ManipulatorVoxelOccupancy(octomap::OcTree*& octomap_tree,
+                            const collision_detection::CollisionRobotConstPtr& collision_robot);
   /** @brief Destructor */
-  ~manipulator_voxel_occupancy_list();
-  /** @brief Mainfuction to compute centers of occupied voxels for a given robot state */
-  void getOccupiedVoxels(robot_state::RobotStatePtr state_, std::vector<std::vector<double> >& occ_list);
+  ~ManipulatorVoxelOccupancy();
+  /**
+   * @brief getOccupiedVoxels Main fuction to compute centers of occupied voxels for a given robot state
+   * @param state Ptr to the state of the robotic arm
+   * @param occ_list Output the list of occupied voxel centers
+   */
+  void getOccupiedVoxels(robot_state::RobotStatePtr state, std::vector<std::vector<double> >& occ_list);
 
 private:
-
-  /** @brief Generate the collision object boxes from the octomap */
+  /**
+   * @brief generateBoxesFromOctomap Generate the collision object boxes from the octomap during initialization
+   * @param tree Octree of Octomap
+   */
   void generateBoxesFromOctomap(octomap::OcTree*& tree);
 
-  std::vector<fcl::CollisionObject*> octree_boxes;
+  /**
+   * @brief octree_boxes_ The collision objects created out of the octree boxes
+   */
+  std::vector<fcl::CollisionObject*> octree_boxes_;
+  /**
+   * @brief manager_ Collision manager for broadphase collision checeking
+   */
   fcl::BroadPhaseCollisionManager* manager_;
-  fcl::CollisionRequest req;
-  fcl::CollisionResult res;
+  /**
+   * @brief req_ Collision check request
+   */
+  fcl::CollisionRequest req_;
+  /**
+   * @brief res_ Collision check response
+   */
+  fcl::CollisionResult res_;
+  /**
+   * @brief robot_fcl_ptr_ The pointer to collision robot object
+   */
   const collision_detection::CollisionRobotFCL* robot_fcl_ptr_;
 };
 
-#endif // MANIPULATOR_VOXEL_OCCUPANCY_LIST_H
+#endif  // MANIPULATOR_VOXEL_OCCUPANCY_LIST_H
