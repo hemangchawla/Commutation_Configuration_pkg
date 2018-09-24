@@ -6,15 +6,13 @@ Run `doxygen Doxyfile` to generate documentation for the "extension"
 ### Preliminary Results
 
 #### Voxel Occupancy list:
-
-![alt text](./results/state3voxel1.png&s=200 "Voxel Occupancy for arm config 1")
-![alt text](./results/state1voxel2.png&s=200 "Voxel Occupancy for arm config 2")
+<img src="./results/state3voxel1.png" alt="Voxel Occupancy for arm config 1" width="200"/>
+<img src="./results/state1voxel2.png" alt="Voxel Occupancy for arm config 2" width="200"/>
 
 #### Filtered Reachability Map (Side view)
-
-![alt text](./results/reachability_original_side_view.png&s=150 "Original reachability map voxels")
-![alt text](./results/reachability_colliding_side_view.png&s=150  "Voxels in reachability map colliding with scene")
-![alt text](./results/reachability_filtered_side_view.png&s=150  "Filtered reachability map")
+<img src="./results/reachability_original_side_view.png" alt="Original reachability map voxels" width="200"/>
+<img src="./results/reachability_colliding_side_view.png" alt="Voxels in reachability map colliding with scene" width="200"/>
+<img src="./results/reachability_filtered_side_view.png" alt="Filtered reachability map" width="200"/>
 
 
 ## Map Creator
