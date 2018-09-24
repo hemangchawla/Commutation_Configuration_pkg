@@ -12,7 +12,7 @@ Run `doxygen Doxyfile` to generate documentation for the "extension"
 
 #### Filtered Reachability Map (Side view)
 
-![alt text](./results/reachability_original_side_view.png =100x "Original reachability map voxels")
+![alt text](./results/reachability_original_side_view.png "Original reachability map voxels" =100x)
 ![alt text](./results/reachability_colliding_side_view.png =100x "Voxels in reachability map colliding with scene")
 ![alt text](./results/reachability_filtered_side_view.png =100x "Filtered reachability map")
 
