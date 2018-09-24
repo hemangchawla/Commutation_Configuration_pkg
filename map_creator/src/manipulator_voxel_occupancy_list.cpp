@@ -41,10 +41,10 @@ void ManipulatorVoxelOccupancy::getOccupiedVoxels(robot_state::RobotStatePtr sta
   {
     for (size_t j = 0; j < arm_objs.size(); ++j)
     {
-      res.clear();
+      res_.clear();
       fcl::collide(arm_objs[j], octree_boxes_[i], req_, res_);
 
-      if (res.isCollision())
+      if (res_.isCollision())
       {
         std::vector<double> center;
         center.push_back(octree_boxes_[i]->getTranslation().data[0]);

@@ -73,13 +73,6 @@ private:
   void readPlanningScene(const moveit_msgs::PlanningScene msg);
 
   /**
-   * @brief setFilterType To set the filter type that will be used to filter the reacchability map
-   * @param input The input string used to specify the filter type
-   * @param filter_type The filter type is set by param by reference
-   */
-  void setFilterType(std::string input, FilterType& filter_type);
-
-  /**
    * @brief createFilteredReachability Filters reachability map using obstacle information
    * @param type The type of filter to be used to remove the reachability voxels in direct collision
    * @param search_tree The obstacle octree for collision check

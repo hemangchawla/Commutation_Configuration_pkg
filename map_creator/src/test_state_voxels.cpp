@@ -39,7 +39,7 @@ int main(int argc, char** argv)
     kinematic_state->setToRandomPositions();
 
     //  Find voxels the state occupies
-    manipulator_voxel_occupancy_list mvol(tree, scene.getCollisionRobot());
+    ManipulatorVoxelOccupancy mvol(tree, scene.getCollisionRobot());
 
     std::chrono::high_resolution_clock::time_point t_start = std::chrono::high_resolution_clock::now();
     std::vector<std::vector<double> > occ_list;

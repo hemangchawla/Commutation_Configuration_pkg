@@ -260,30 +260,6 @@ void FilteredReachability::spin(FilterType filter_type)
   }
 }
 
-void FilteredReachability::setFilterType(std::string input, FilterType& filter_type)
-{
-  if (input.compare("voxel") == 0)
-  {
-    ROS_INFO("Setting filter type to VOXEL");
-    filter_type = FilteredReachability::VOXEL;
-  }
-  else if (input.compare("circumscribe") == 0)
-  {
-    ROS_INFO("Setting filter type to CIRCUMSCRIBED SPHERE");
-    filter_type = FilteredReachability::CIRCUMSCRIBED_SPHERE;
-  }
-  else if (input.compare("inscribe") == 0)
-  {
-    ROS_INFO("Setting filter type to INSCRIBED SPHERE");
-    filter_type = FilteredReachability::INSCRIBED_SPHERE;
-  }
-  else
-  {
-    ROS_ERROR_STREAM("Invalid filtering type " << input << " receievd. Shutting Down!");
-    ros::shutdown();
-  }
-}
-
 int main(int argc, char** argv)
 {
   FilteredReachability::FilterType filter_type;
@@ -298,7 +274,26 @@ int main(int argc, char** argv)
     std::string input = argv[1];
     std::transform(input.begin(), input.end(), input.begin(), ::tolower);
 
-    setFilterType(input, filter_type);
+    if (input.compare("voxel") == 0)
+    {
+      ROS_INFO("Setting filter type to VOXEL");
+      filter_type = FilteredReachability::VOXEL;
+    }
+    else if (input.compare("circumscribe") == 0)
+    {
+      ROS_INFO("Setting filter type to CIRCUMSCRIBED SPHERE");
+      filter_type = FilteredReachability::CIRCUMSCRIBED_SPHERE;
+    }
+    else if (input.compare("inscribe") == 0)
+    {
+      ROS_INFO("Setting filter type to INSCRIBED SPHERE");
+      filter_type = FilteredReachability::INSCRIBED_SPHERE;
+    }
+    else
+    {
+      ROS_ERROR_STREAM("Invalid filtering type " << input << " receievd. Shutting Down!");
+      ros::shutdown();
+    }
   }
 
   ros::init(argc, argv, "remove_reachability_obstacles");
