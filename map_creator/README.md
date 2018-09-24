@@ -7,14 +7,14 @@ Run `doxygen Doxyfile` to generate documentation for the "extension"
 
 #### Voxel Occupancy list:
 
-![alt text](./results/state3voxel1.png =100x "Voxel Occupancy for arm config 1")
-![alt text](./results/state1voxel2.png =100x "Voxel Occupancy for arm config 2")
+![alt text](./results/state3voxel1.png "Voxel Occupancy for arm config 1"){:height="50%" width="50%"}
+![alt text](./results/state1voxel2.png "Voxel Occupancy for arm config 2"){:height="50%" width="50%"}
 
 #### Filtered Reachability Map (Side view)
 
-![alt text](./results/reachability_original_side_view.png "Original reachability map voxels" =100x)
-![alt text](./results/reachability_colliding_side_view.png =100x "Voxels in reachability map colliding with scene")
-![alt text](./results/reachability_filtered_side_view.png =100x "Filtered reachability map")
+![alt text](./results/reachability_original_side_view.png "Original reachability map voxels"){:height="50%" width="50%"}
+![alt text](./results/reachability_colliding_side_view.png  "Voxels in reachability map colliding with scene"){:height="50%" width="50%"}
+![alt text](./results/reachability_filtered_side_view.png  "Filtered reachability map"){:height="50%" width="50%"}
 
 
 ## Map Creator
