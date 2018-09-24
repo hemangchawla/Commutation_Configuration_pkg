@@ -1,0 +1,15 @@
+/**
+
+\mainpage
+
+Collision Aware reachability and inverse reachability mapping extension of the ros-industrial reuleaux package. These will be useful in dynamic scenes as the robot placement is updated based on the changes in scene
+
+\section reachability_map Collision aware reachability map:
+- Direct updating: removing spheres that are in collision with octomap
+- Indirect updating*: updating reachability index / color of the spheres that are affected by the octomap filtering.
+\section robot_placement Collision aware Robot Placement:
+- How to make the inv reachability map now.
+- How to deal with obstacles which are on the floor where the base can be placed {incorporate 2d laser scan data} 
+
+
+**/
