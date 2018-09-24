@@ -45,3 +45,14 @@ qtcreator-*
 
 # Catkin custom files
 CATKIN_IGNORE
+/map_creator/doc/latex/Makefile
+/map_creator/doc/latex/annotated.tex
+/map_creator/doc/latex/classFilteredReachability.tex
+/map_creator/doc/latex/classManipulatorVoxelOccupancy.tex
+/map_creator/doc/latex/dir_150517dd2fcf64e8375c74a933a44ee7.tex
+/map_creator/doc/latex/dir_68267d1309a1af8e8297ef4c3efbcdba.tex
+/map_creator/doc/latex/dir_d44c64559bbebec7f509842c48db8b23.tex
+/map_creator/doc/latex/doxygen.sty
+/map_creator/doc/latex/index.tex
+/map_creator/doc/latex/refman.tex
+/map_creator/doc/latex/todo.tex
