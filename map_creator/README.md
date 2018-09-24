@@ -3,6 +3,11 @@ Extending the ROS-Industrial package to have dynamic inverse reachability maps t
 
 Run `doxygen Doxyfile` to generate documentation for the "extension"
 
+### Preliminary Results
+Voxel Occupancy list:
+![alt text](./results/state1voxel2.png "Voxel Occupancy for arm config")
+
+
 
 ## Map Creator
 ====
