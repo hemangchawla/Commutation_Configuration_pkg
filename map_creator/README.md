@@ -1,6 +1,8 @@
 ## Collsion Aware Dyanamic Reachability Maps
 Extending the ROS-Industrial package to have dynamic inverse reachability maps that update as the scene changes allowing for dynamic robot placement
 
+Run `doxygen Doxyfile` to generate documentation for the "extension"
+
 
 ## Map Creator
 ====
