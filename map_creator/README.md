@@ -4,9 +4,17 @@ Extending the ROS-Industrial package to have dynamic inverse reachability maps t
 Run `doxygen Doxyfile` to generate documentation for the "extension"
 
 ### Preliminary Results
-Voxel Occupancy list:
-![alt text](./results/state1voxel2.png "Voxel Occupancy for arm config")
 
+#### Voxel Occupancy list:
+
+![alt text](./results/state3voxel1.png =100x "Voxel Occupancy for arm config 1")
+![alt text](./results/state1voxel2.png =100x "Voxel Occupancy for arm config 2")
+
+#### Filtered Reachability Map (Side view)
+
+![alt text](./results/reachability_original_side_view.png =100x "Original reachability map voxels")
+![alt text](./results/reachability_colliding_side_view.png =100x "Voxels in reachability map colliding with scene")
+![alt text](./results/reachability_filtered_side_view.png =100x "Filtered reachability map")
 
 
 ## Map Creator
