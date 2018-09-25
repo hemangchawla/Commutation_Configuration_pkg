@@ -1,3 +1,7 @@
+/*
+ * Author: Abhijit Makhal
+ */
+
 // The inverse reachability map depends on the reachability map. It is an inversion of the poses to the base location
 #include <ros/ros.h>
 #include <ros/package.h>

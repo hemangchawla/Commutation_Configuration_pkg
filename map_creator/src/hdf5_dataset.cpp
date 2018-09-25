@@ -1,3 +1,7 @@
+/*
+ * Author: Abhijit Makhal
+ */
+
 #include <map_creator/hdf5_dataset.h>
 
 #define RANK_OUT 2

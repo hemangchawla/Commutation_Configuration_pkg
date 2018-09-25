@@ -1,3 +1,7 @@
+/*
+ * Author: Abhijit Makhal
+ */
+
 #include <map_creator/kinematics.h>
 
 #if IK_VERSION > 54

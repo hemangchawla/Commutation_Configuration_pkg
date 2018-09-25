@@ -1,3 +1,7 @@
+/*
+ * Author: Abhijit Makhal
+ */
+
 #include <map_creator/sphere_discretization.h>
 
 namespace sphere_discretization

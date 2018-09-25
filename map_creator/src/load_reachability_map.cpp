@@ -1,3 +1,7 @@
+/*
+ * Author: Abhijit Makhal
+ */
+
 #include <ros/ros.h>
 #include "map_creator/WorkSpace.h"
 #include <map_creator/hdf5_dataset.h>

@@ -1,6 +1,10 @@
 #ifndef REMOVE_REACHABILITY_OBSTACLES_H
 #define REMOVE_REACHABILITY_OBSTACLES_H
 
+/*
+ * Author: Hemang Chawla
+ */
+
 // C++
 #include <chrono>
 

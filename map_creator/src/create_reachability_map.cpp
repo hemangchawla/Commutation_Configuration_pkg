@@ -1,3 +1,7 @@
+/*
+ * Author: Abhijit Makhal
+ */
+
 // The spheres and poses are fused in a single dataset, instead of two datasets for sphere and poses
 #include <ros/ros.h>
 #include <ros/package.h>

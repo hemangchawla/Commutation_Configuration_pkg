@@ -1,3 +1,7 @@
+/*
+ * Author: Abhijit Makhal
+ */
+
 #include <ros/ros.h>
 #include <ros/package.h>
 #include <octomap/octomap.h>

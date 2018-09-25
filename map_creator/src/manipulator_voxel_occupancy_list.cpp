@@ -1,3 +1,7 @@
+/*
+ * Author: Hemang Chawla
+ */
+
 #include <map_creator/manipulator_voxel_occupancy_list.h>
 
 ManipulatorVoxelOccupancy::ManipulatorVoxelOccupancy(octomap::OcTree*& tree,

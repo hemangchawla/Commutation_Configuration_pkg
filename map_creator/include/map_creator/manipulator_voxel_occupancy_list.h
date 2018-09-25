@@ -1,6 +1,10 @@
 #ifndef MANIPULATOR_VOXEL_OCCUPANCY_LIST_H
 #define MANIPULATOR_VOXEL_OCCUPANCY_LIST_H
 
+/*
+ * Author: Hemang Chawla
+ */
+
 // Basic
 #include <chrono>
 
